@@ -11,9 +11,25 @@
   });
 
 
-let db = firebase.database();
-let users = db.ref("users");
+// let db = firebase.database()
+// let users = db.ref("users")
+// let igor = db.ref("users/igor")
 
-users.set("ok");
+
+let userId = "001"
+let name = "Igor"
+let sobrenome = "Angeli"
+let email = "agigor@outlook.com"
+
+let key = firebase.database().ref().child("users").push().key;
+
+
+
+  firebase.database().ref('users/' + name).set({
+    name: {first: name,
+            last: sobrenome},
+    email: email,
+    id: key
+  })
 
 
