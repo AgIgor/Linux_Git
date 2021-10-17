@@ -41,15 +41,15 @@ let lista_sobrenomes = ["da Silva","dos Santos","Pereira","Alves","Ferreira","de
                         "Medeiros","Cordeiro","Conceição","Farias","Dantas","Cavalcante","da Rocha",
                         "de Assis","Braga","Cruz","Siqueira"]                            
 //=================================================================//
-let indexNome = Math.floor((Math.random() * lista_nomes.length) + 1);
-let indexSobrenome = Math.floor((Math.random() * lista_sobrenomes.length) + 1);
+let indexNome = Math.floor((Math.random() * lista_nomes.length));
+let indexSobrenome = Math.floor((Math.random() * lista_sobrenomes.length));
 
-// console.log(lista_nomes[indexNome],lista_sobrenomes[indexSobrenome]);
+console.log(indexNome,indexSobrenome);
 let first = lista_nomes[indexNome];
 let last = lista_sobrenomes[indexSobrenome];
 
-/* let user_nome = {"first":first, "last": last};
-console.log(user_nome); */
+let user_nome = {"first":first, "last": last};
+console.log(user_nome);
 
 let nome = first
 let sobrenome = last
@@ -114,7 +114,9 @@ function salvarDados(nome_,sobrenome_,email_){
   var starCountRef = firebase.database().ref('users');
   starCountRef.on('value', (snapshot) => {
     const data = snapshot.val();
-    console.log(data);
+    let list = data
+
+    console.log(list);
   });
 
 //=================================================================//
@@ -133,7 +135,7 @@ function addStar(uid, key) {
 } */
 
 
-setTimeout(function(){location.reload()},5000)
+// setTimeout(function(){location.reload()},5000)
 
 
 
