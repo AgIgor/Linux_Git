@@ -12,5 +12,4 @@ const firebaseConfig = {
   firebase.initializeApp(firebaseConfig)
 
 
-
-console.log("teste")
+console.log("ok")
