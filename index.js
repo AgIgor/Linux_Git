@@ -9,7 +9,11 @@
     appId: "1:407141110375:web:1b1ecc00c85aabd2713ac2",
     measurementId: "G-Y2QDD0H8NF"
   });
+
+
 //=================================================================//
+
+  
 let lista_nomes = [ "Helena", "Miguel", "Alice", "Arthur", "Laura", "Heitor", "Manuela",
                     "Bernardo", "Valentina", "Davi", "Sophia", "Théo", "Isabella",
                     "Lorenzo", "Heloísa", "Gabriel", "Luiza", "Pedro", "Júlia", "Benjamin", 
@@ -41,34 +45,62 @@ let lista_sobrenomes = ["da Silva","dos Santos","Pereira","Alves","Ferreira","de
                         "Medeiros","Cordeiro","Conceição","Farias","Dantas","Cavalcante","da Rocha",
                         "de Assis","Braga","Cruz","Siqueira"]                            
 //=================================================================//
+
+
 let indexNome = Math.floor((Math.random() * lista_nomes.length));
 let indexSobrenome = Math.floor((Math.random() * lista_sobrenomes.length));
 
 console.log(indexNome,indexSobrenome);
+
 let first = lista_nomes[indexNome];
 let last = lista_sobrenomes[indexSobrenome];
 
-let user_nome = {"first":first, "last": last};
-console.log(user_nome);
+let user_name = `${first}_${last}`
 
-let nome = first
-let sobrenome = last
-let email = `${first}${last}@outlook.com`.toLowerCase().trim()
-let password = "12345678"
+let db = 'name/'
 
-salvarDados(nome,sobrenome,email);
-//=================================================================//
-function salvarDados(nome_,sobrenome_,email_){
-  let key = firebase.database().ref().child("users").push().key;
-  let val = firebase.database.ServerValue.increment(1);
 
-  firebase.database().ref(`users/${first} ${last}`).update({
-    name: {"first": nome_,"last": sobrenome_},
-    email: email_,
-    last_key: key,
-    updates: val
-  })
-}//end salvar dados
+let path = 'users/'+db+user_name.toLowerCase().replace(' ','_')
+
+let valor = JSON.stringify({first: first,last: last})
+
+
+fetch(`https://esp8266-b2bbf-default-rtdb.firebaseio.com/${path}.json`,
+  {method: 'PATCH', body: valor })
+  .then((response) => response.json())
+  .then((json) => console.log(json))
+
+
+  //=================================================================//
+
+// let indexNome = Math.floor((Math.random() * lista_nomes.length));
+// let indexSobrenome = Math.floor((Math.random() * lista_sobrenomes.length));
+
+// console.log(indexNome,indexSobrenome);
+// let first = lista_nomes[indexNome];
+// let last = lista_sobrenomes[indexSobrenome];
+
+// let user_nome = {"first":first, "last": last};
+// console.log(user_nome);
+
+// let nome = first
+// let sobrenome = last
+// let email = `${first}${last}@outlook.com`.toLowerCase().trim()
+// let password = "12345678"
+
+// salvarDados(nome,sobrenome,email);
+// //=================================================================//
+// function salvarDados(nome_,sobrenome_,email_){
+//   let key = firebase.database().ref().child("users").push().key;
+//   let val = firebase.database.ServerValue.increment(1);
+
+//   firebase.database().ref(`users/${first} ${last}`).update({
+//     name: {"first": nome_,"last": sobrenome_},
+//     email: email_,
+//     last_key: key,
+//     updates: val
+//   })
+// }//end salvar dados
 //=================================================================//
 
 // //criar
@@ -110,14 +142,14 @@ function salvarDados(nome_,sobrenome_,email_){
 
 //=================================================================//
 
-  //detectar altereçoes
+ /*  //detectar altereçoes
   var starCountRef = firebase.database().ref('users');
   starCountRef.on('value', (snapshot) => {
     const data = snapshot.val();
     let list = data
 
     console.log(list);
-  });
+  }); */
 
 //=================================================================//
 
