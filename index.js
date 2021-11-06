@@ -13,7 +13,9 @@
 
 //=================================================================//
 
-  
+let lastId = null 
+let dados = []
+
 let lista_nomes = [ "Helena", "Miguel", "Alice", "Arthur", "Laura", "Heitor", "Manuela",
                     "Bernardo", "Valentina", "Davi", "Sophia", "Théo", "Isabella",
                     "Lorenzo", "Heloísa", "Gabriel", "Luiza", "Pedro", "Júlia", "Benjamin", 
@@ -46,29 +48,14 @@ let lista_sobrenomes = ["da Silva","dos Santos","Pereira","Alves","Ferreira","de
                         "de Assis","Braga","Cruz","Siqueira"]                            
 //=================================================================//
 
-
-let indexNome = Math.floor((Math.random() * lista_nomes.length));
-let indexSobrenome = Math.floor((Math.random() * lista_sobrenomes.length));
-
-console.log(indexNome,indexSobrenome);
-
-let first = lista_nomes[indexNome];
-let last = lista_sobrenomes[indexSobrenome];
-
-let user_name = `${first}_${last}`
-
-let db = 'name/'
+recuperaID()
 
 
-let path = 'users/'+db+user_name.toLowerCase().replace(' ','_')
 
-let valor = JSON.stringify({first: first,last: last})
-
-
-fetch(`https://esp8266-b2bbf-default-rtdb.firebaseio.com/${path}.json`,
-  {method: 'PATCH', body: valor })
-  .then((response) => response.json())
-  .then((json) => console.log(json))
+// fetch(`https://esp8266-b2bbf-default-rtdb.firebaseio.com/${path}.json`,
+//   {method: 'PATCH', body: valor })
+//   .then((response) => response.json())
+//   .then((json) => console.log(json))
 
 
   //=================================================================//
@@ -83,25 +70,110 @@ fetch(`https://esp8266-b2bbf-default-rtdb.firebaseio.com/${path}.json`,
 // let user_nome = {"first":first, "last": last};
 // console.log(user_nome);
 
-// let nome = first
-// let sobrenome = last
-// let email = `${first}${last}@outlook.com`.toLowerCase().trim()
-// let password = "12345678"
-
-// salvarDados(nome,sobrenome,email);
-// //=================================================================//
-// function salvarDados(nome_,sobrenome_,email_){
-//   let key = firebase.database().ref().child("users").push().key;
-//   let val = firebase.database.ServerValue.increment(1);
-
-//   firebase.database().ref(`users/${first} ${last}`).update({
-//     name: {"first": nome_,"last": sobrenome_},
-//     email: email_,
-//     last_key: key,
-//     updates: val
-//   })
-// }//end salvar dados
+function recuperaID(){
+  firebase.database().ref("lastId").once('value', (snapshot) => {
+    snapshot.forEach((childSnapshot) => {
+    let newID = childSnapshot.val()
+    lastId = newID + 1
+    });
+  }).then(()=>{
+    if(lastId == null)lastId = 1
+    sorteiaNomes()
+    console.log('Last Id',lastId)
+  })
+}//end recupera ID
 //=================================================================//
+function sorteiaNomes(){
+
+  let indexNome = Math.floor((Math.random() * lista_nomes.length));
+  let first = lista_nomes[indexNome];
+  let indexSobrenome = Math.floor((Math.random() * lista_sobrenomes.length));
+  let last = lista_sobrenomes[indexSobrenome];
+  // console.log(indexNome,indexSobrenome);
+  // console.log(first,last)
+  dados = [first,last]
+  salvarFirebase()
+
+}//end sorteia nomes
+//=================================================================//
+function salvarFirebase(){
+
+  let key = firebase.database().ref().child("users").push().key;
+  let val = firebase.database.ServerValue.increment(1);
+
+  let path = getDados('path')
+
+  console.log(path)
+  console.log(getDados('nome_first'),getDados('nome_last'))
+  console.log(getDados('email'))
+
+  if(true){
+    firebase.database().ref(path).update({
+      name: {"first": getDados('nome_first'),"last": getDados('nome_last')},
+      email: getDados('email'),
+      last_key: key,
+      updates: val,
+      id : lastId
+    })
+
+    .then(() => {
+      console.log("User salvo!");
+      incrementId();
+    })
+    .catch((error) => {
+      console.error("Error: ", error);
+    });    
+  }
+
+}//end salva firebase
+//=================================================================//
+function getDados(modo){
+
+  // console.log(dados)
+
+  let first = dados[0].toLowerCase().trim()//CONVERTE TEXTO EM CAIXA BAIXA E REMOVE ESPAÇOS
+  let last = dados[1].toLowerCase().trim()
+
+  while(first.includes(' ') || last.includes(' ')){
+    first = first.toLowerCase().trim().replace(' ','_')
+    last = last.toLowerCase().trim().replace(' ','_')
+  }//enquanto houver espaços ele troca por _
+
+  let user_name = `${first}_${last}`
+  let email =  `${first}_${last}@outlook.com` 
+  let path = 'users/'+user_name
+
+
+  if(modo == 'path'){
+    return path;
+  }
+  if(modo == 'user_name'){
+    return user_name
+  }
+  if(modo == 'nome_first'){
+    return first
+  }
+  if(modo == 'nome_last'){
+    return last
+  }
+  if(modo == 'email'){
+    return email
+  }
+
+}//end get dados
+//=================================================================//
+
+function incrementId(){
+  firebase.database().ref('lastId/id').transaction(function(valorAtual) {        
+    return valorAtual += 1
+  }).then(() => {
+    console.log("Fim");
+    //location.reload()
+  })  
+}//end incrementa id
+//=================================================================//
+
+
 
 // //criar
 //   firebase.auth().createUserWithEmailAndPassword(email, password)
